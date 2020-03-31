@@ -9,6 +9,10 @@
   "author": "zjc",
   "license": "MIT",
   "dependencies": {
-    "acorn": "^7.1.1"
+    "acorn": "^7.1.1",
+    "chalk": "^3.0.0",
+    "escodegen": "^1.14.1",
+    "esprima": "^4.0.1",
+    "estraverse": "^5.0.0"
   }
 }
