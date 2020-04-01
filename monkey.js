@@ -54,7 +54,7 @@ module.exports = class Monkey {
   work() {
     const code = escodegen.generate(this.ast)
     fs.writeFileSync(this.url, code)
-    console.log(chalk.green('Monkey\'s work finished!'))
+    console.log(chalk.green('Monkey finished work!'))
   }
 
 }

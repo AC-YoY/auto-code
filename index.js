@@ -37,6 +37,13 @@ let ast
 ast = esprima.parse(routerCodes, {sourceType: 'module'})
 log('Origin AST', ast)
 
+// tokenize
+// log(
+//   'lexical analysis',
+//   esprima.tokenize(routerCodes)
+// )
+// return
+
 // 方法名称替换
 const currentName = 'test'
 const targetName = 'testNew'

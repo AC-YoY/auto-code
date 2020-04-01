@@ -1,0 +1,9 @@
+## 进度
+
+#### 两个仓库区别
+1. esprima 更全面
+2. acorn 更快速
+
+#### esprima 部分功能
+- tokenize 词法分析，返回每一段字符拼接成的数组
+- parse 生成 ast
