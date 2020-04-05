@@ -6,6 +6,7 @@ const escodegen = require('escodegen')
 
 const fs = require('fs')
 const chalk = require('chalk')
+const util = require('util')
 
 const divideLine = function () {
   console.log(chalk.bold.green('--------------------------------------------------------------------'))
@@ -15,7 +16,7 @@ const log = function () {
   const args = [].slice.call(arguments, 1)
   divideLine()
   console.log(chalk.bold.green(mark + ':'))
-  console.log(...args)
+  console.log(util.inspect(...args, false, null))
   divideLine()
 }
 
