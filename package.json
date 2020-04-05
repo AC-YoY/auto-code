@@ -9,6 +9,9 @@
   "author": "zjc",
   "license": "MIT",
   "dependencies": {
+    "@babel/generator": "^7.9.4",
+    "@babel/parser": "^7.9.4",
+    "@babel/traverse": "^7.9.0",
     "acorn": "^7.1.1",
     "chalk": "^3.0.0",
     "escodegen": "^1.14.1",
