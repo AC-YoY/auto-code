@@ -1,4 +1,4 @@
-const Monkey = require('./monkey')
+const Monkey = require('./monkey-esprima')
 
 const monkey = new Monkey('./myapp/src/router/index.js')
 monkey.read()
