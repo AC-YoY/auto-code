@@ -41,7 +41,8 @@ const createVisitor = ({types}) => ({
       opt.camel2DashComponentName = typeof opt.camel2DashComponentName === 'undefined'
         ? false
         : opt.camel2DashComponentName
-
+      // ImportDefaultSpecifier import xx from 'xx'
+      // ImportNamespaceSpecifier import * as xx from 'xx'
       if (!types.isImportDefaultSpecifier(specifiers[0]) && !types.isImportNamespaceSpecifier(specifiers[0])) {
         // 遍历specifiers生成转换后的ImportDeclaration节点数组
         const declarations = specifiers.map((specifier) => {
