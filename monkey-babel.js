@@ -1,26 +1,44 @@
 const babel = require('@babel/core')
 const types = require('@babel/types')
 const fs = require('fs')
-const { log } = require('./utils')
+const {log} = require('./utils')
+const path = require('path')
+
+const pwd = './myapp/src'
 
 function readMain() {
-  const mainPath = './myapp/src/main.js'
+  const mainPath = pwd + '/main.js'
   const src = fs.readFileSync(mainPath).toString()
   log('main', src)
 
   const routerPath = findRouterPath(src)
+  log('路径', path.join(pwd, routerPath))
+  readRouter(path.join(pwd, routerPath))
 }
 
 function findRouterPath(src) {
   // const ast = babel.parse(src)
   // log('main ast', ast)
+  const variable2Path = {}
+  let resultPath = ''
+
   const result = babel.transform(src, {
     plugins: [
       {
         visitor: {
+          ImportDeclaration(path, {opts}) {
+            const {node} = path
+            if (!types.isImportDeclaration(node)) return
+
+            node.specifiers.forEach(n => {
+              if (types.isImportDefaultSpecifier(n)) {
+                variable2Path[n.local.name] = node.source.value
+              }
+            })
+          },
           ExpressionStatement(path, {opts}) {
             // console.log('path', path)
-            const { node } = path
+            const {node} = path
             // types 比较的是 node 节点
             if (!types.isCallExpression(node.expression)) return
 
@@ -33,57 +51,44 @@ function findRouterPath(src) {
             if (node.expression.callee.object.callee.name !== 'Vue') return
 
             node.expression.callee.object.arguments[0].properties.forEach(n => {
-              if (n.value.name === 'router') {
-                // 找到了 router，router 变量在哪里？
-                // todo：找变量名是什么
-                log('找到了 router', n)
+              if (n.key.name === 'router') {
+                log('找到了 router', n.value.name)
+                log('全部地址是:', variable2Path)
+                log('地址是:', variable2Path[n.value.name])
+                resultPath = variable2Path[n.value.name]
               }
             })
-            // const specifiers = path.node.specifiers
-            // const source = path.node.source
-            //
-            // // 判断传入的配置参数是否是数组形式
-            // if (Array.isArray(opts)) {
-            //   opts.forEach(opt => {
-            //     assert(opt.libraryName, 'libraryName should be provided')
-            //   })
-            //   if (!opts.find(opt => opt.libraryName === source.value)) return
-            // } else {
-            //   assert(opts.libraryName, 'libraryName should be provided')
-            //   if (opts.libraryName !== source.value) return
-            // }
-            //
-            // const opt = Array.isArray(opts) ? opts.find(opt => opt.libraryName === source.value) : opts
-            // opt.camel2UnderlineComponentName = typeof opt.camel2UnderlineComponentName === 'undefined'
-            //   ? false
-            //   : opt.camel2UnderlineComponentName
-            // opt.camel2DashComponentName = typeof opt.camel2DashComponentName === 'undefined'
-            //   ? false
-            //   : opt.camel2DashComponentName
-            // // ImportDefaultSpecifier import xx from 'xx'
-            // // ImportNamespaceSpecifier import * as xx from 'xx'
-            // if (!types.isImportDefaultSpecifier(specifiers[0]) && !types.isImportNamespaceSpecifier(specifiers[0])) {
-            //   // 遍历specifiers生成转换后的ImportDeclaration节点数组
-            //   const declarations = specifiers.map((specifier) => {
-            //     // 转换组件名称
-            //     const transformedSourceName = opt.camel2UnderlineComponentName
-            //       ? camel2Underline(specifier.imported.name)
-            //       : opt.camel2DashComponentName
-            //         ? camel2Dash(specifier.imported.name)
-            //         : specifier.imported.name
-            //     // 利用自定义的customSourceFunc生成绝对路径，然后创建新的ImportDeclaration节点
-            //     return types.ImportDeclaration([types.ImportDefaultSpecifier(specifier.local)],
-            //       types.StringLiteral(opt.customSourceFunc(transformedSourceName)))
-            //   })
-            //   // 将当前节点替换成新建的ImportDeclaration节点组
-            //   path.replaceWithMultiple(declarations)
-            // }
           }
         }
       }
     ]
   })
   log('result', result.code)
+  return resultPath
+}
+
+function readRouter(path) {
+  let file
+  try {
+    file = fs.readFileSync(path).toString()
+    log('file1', file)
+  } catch (e) {
+    file = fs.readFileSync(path + '/index.js').toString()
+    log('file2', file)
+  }
+  analysisRouter(file)
+}
+
+function analysisRouter(code) {
+  const result = babel.transform(code, {
+    plugins: [
+      {
+        visitor: {
+          // 分析 new VueRouter
+        }
+      }
+    ]
+  })
 }
 
 readMain()
